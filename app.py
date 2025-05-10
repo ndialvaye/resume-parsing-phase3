@@ -1,6 +1,7 @@
 import streamlit as st
 from utils import extract_named_entities, display_entities
 
+
 st.title("🧠 Resume Parsing - Phase 3: Named Entity Recognition")
 
 uploaded_file = st.file_uploader("📄 Upload your resume (PDF)", type=["pdf"])
