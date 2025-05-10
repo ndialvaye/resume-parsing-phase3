@@ -1,8 +1,9 @@
+import re
+import fitz  # PyMuPDF
 import spacy
-import pandas as pd
+
 import streamlit as st
 
-# Chargement robuste du modèle SpaCy
 try:
     nlp = spacy.load("en_core_web_sm")
 except OSError:
@@ -10,18 +11,18 @@ except OSError:
     download("en_core_web_sm")
     nlp = spacy.load("en_core_web_sm")
 
-def extract_named_entities(text):
-    doc = nlp(text)
-    data = {"Texte": [], "Étiquette": []}
-    for ent in doc.ents:
-        data["Texte"].append(ent.text)
-        data["Étiquette"].append(ent.label_)
-    return pd.DataFrame(data)
+def extract_named_entities(pdf_path):
+    doc = fitz.open(pdf_path)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    text = re.sub(r"\n+", " ", text)
+    return [(ent.text, ent.label_) for ent in nlp(text).ents]
 
-def display_entities(df):
-    if not df.empty:
-        st.dataframe(df)
-        csv = df.to_csv(index=False).encode("utf-8")
-        st.download_button("📥 Télécharger le CSV", csv, "entites_nommes.csv")
+def display_entities(entities):
+    if not entities:
+        st.warning("Aucune entité détectée.")
     else:
-        st.warning("Aucune entité nommée trouvée dans ce fichier.")
+        st.write("### ✨ Entités reconnues :")
+        for text, label in entities:
+            st.markdown(f"**{label}** → {text}")
