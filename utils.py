@@ -1,20 +1,28 @@
 
 import spacy
 from PyPDF2 import PdfReader
-import streamlit as st
 
-nlp = spacy.load("en_core_web_sm")
+# Chargement automatique du modèle en_core_web_sm si non installé
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    import spacy.cli
+    spacy.cli.download("en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
-def extract_named_entities(pdf_path):
-    reader = PdfReader(pdf_path)
+def extract_named_entities(file_bytes):
     text = ""
+    reader = PdfReader(file_bytes)
     for page in reader.pages:
-        text += page.extract_text() or ""
+        text += page.extract_text() + "\n"
+
     doc = nlp(text)
     entities = [(ent.text, ent.label_) for ent in doc.ents]
     return entities
 
 def display_entities(entities):
-    st.subheader("Entités nommées extraites :")
-    for ent_text, ent_label in entities:
-        st.write(f"**{ent_label}** : {ent_text}")
+    if not entities:
+        st.info("Aucune entité détectée.")
+    else:
+        for text, label in entities:
+            st.markdown(f"**{label}** : {text}")
