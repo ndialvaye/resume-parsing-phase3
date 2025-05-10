@@ -21,6 +21,7 @@ def extract_named_entities(text):
 def display_entities(df):
     if not df.empty:
         st.dataframe(df)
-        st.download_button("📥 Télécharger en CSV", df.to_csv(index=False).encode(), "entites_nommes.csv")
+        csv = df.to_csv(index=False).encode("utf-8")
+        st.download_button("📥 Télécharger le CSV", csv, "entites_nommes.csv")
     else:
-        st.warning("Aucune entité trouvée.")
+        st.warning("Aucune entité nommée trouvée dans ce fichier.")
