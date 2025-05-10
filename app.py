@@ -1,13 +1,14 @@
-
 import streamlit as st
 from utils import extract_named_entities, display_entities
 
-st.title("📄 Analyse de CV - Phase 3 : Reconnaissance d'entités nommées (NER)")
+st.set_page_config(page_title="Resume NER", layout="centered")
 
-uploaded_file = st.file_uploader("Uploader un CV (PDF uniquement)", type=["pdf"])
+st.title("📄 Extraction des entités depuis un CV (Phase 3)")
+
+uploaded_file = st.file_uploader("Téléversez un fichier PDF de CV", type=["pdf"])
 
 if uploaded_file is not None:
-    text = uploaded_file.read()
-    named_entities = extract_named_entities(text)
-    st.subheader("📌 Entités extraites")
-    display_entities(named_entities)
+    st.success("📥 Fichier chargé avec succès. Traitement en cours...")
+    entities = extract_named_entities(uploaded_file)
+    st.subheader("📌 Résultat de l'extraction des entités :")
+    display_entities(entities)
