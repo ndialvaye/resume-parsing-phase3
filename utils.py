@@ -1,28 +1,32 @@
 import re
-import fitz  # PyMuPDF
 import spacy
-
+from PyPDF2 import PdfReader
 import streamlit as st
 
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    from spacy.cli import download
-    download("en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_sm")
+
+def extract_text_from_pdf(pdf_path):
+    text = ""
+    try:
+        reader = PdfReader(pdf_path)
+        for page in reader.pages:
+            text += page.extract_text() + "\n"
+    except Exception as e:
+        st.error(f"Erreur de lecture du PDF : {e}")
+    return text
 
 def extract_named_entities(pdf_path):
-    doc = fitz.open(pdf_path)
-    text = ""
-    for page in doc:
-        text += page.get_text()
-    text = re.sub(r"\n+", " ", text)
-    return [(ent.text, ent.label_) for ent in nlp(text).ents]
+    text = extract_text_from_pdf(pdf_path)
+    doc = nlp(text)
+    entities = [(ent.text.strip(), ent.label_) for ent in doc.ents]
+    return entities
 
 def display_entities(entities):
     if not entities:
-        st.warning("Aucune entité détectée.")
-    else:
-        st.write("### ✨ Entités reconnues :")
-        for text, label in entities:
-            st.markdown(f"**{label}** → {text}")
+        st.warning("Aucune entité trouvée.")
+        return
+    labels = sorted(set(label for _, label in entities))
+    for label in labels:
+        st.subheader(label)
+        items = [text for text, lbl in entities if lbl == label]
+        st.write(", ".join(set(items)))
