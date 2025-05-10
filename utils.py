@@ -2,7 +2,7 @@ import spacy
 import pandas as pd
 import streamlit as st
 
-# Télécharger le modèle si besoin
+# Chargement robuste du modèle SpaCy
 try:
     nlp = spacy.load("en_core_web_sm")
 except OSError:
@@ -12,15 +12,15 @@ except OSError:
 
 def extract_named_entities(text):
     doc = nlp(text)
-    data = {"Text": [], "Label": []}
+    data = {"Texte": [], "Étiquette": []}
     for ent in doc.ents:
-        data["Text"].append(ent.text)
-        data["Label"].append(ent.label_)
+        data["Texte"].append(ent.text)
+        data["Étiquette"].append(ent.label_)
     return pd.DataFrame(data)
 
 def display_entities(df):
     if not df.empty:
         st.dataframe(df)
-        st.download_button("📥 Télécharger les entités en Excel", df.to_csv(index=False).encode(), "entities.csv")
+        st.download_button("📥 Télécharger en CSV", df.to_csv(index=False).encode(), "entites_nommes.csv")
     else:
         st.warning("Aucune entité trouvée.")
