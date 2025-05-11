@@ -1,15 +1,18 @@
-
 import spacy
-from PyPDF2 import PdfReader
+import pandas as pd
+import PyPDF2
+from io import BytesIO
 
-def extract_text_from_pdf(file):
-    pdf = PdfReader(file)
+# Charger le modèle NER de spaCy
+nlp = spacy.load("en_core_web_sm")
+
+def extract_named_entities(pdf_file):
+    reader = PyPDF2.PdfReader(BytesIO(pdf_file.read()))
     text = ""
-    for page in pdf.pages:
+    for page in reader.pages:
         text += page.extract_text() or ""
-    return text
 
-def extract_named_entities(text):
-    nlp = spacy.load("en_core_web_sm")
     doc = nlp(text)
-    return [(ent.text, ent.label_) for ent in doc.ents]
+    data = [(ent.text, ent.label_) for ent in doc.ents]
+    df = pd.DataFrame(data, columns=["Texte", "Type"]) if data else pd.DataFrame()
+    return df
