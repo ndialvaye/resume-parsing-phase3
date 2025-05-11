@@ -1,16 +1,20 @@
-
 import spacy
-import streamlit as st
 
-nlp = spacy.load("en_core_web_sm")
+# Charger le modèle en_core_web_sm compatible avec spacy==3.5
+try:
+    nlp = spacy.load("en_core_web_sm")
+except:
+    import os
+    os.system("python -m spacy download en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
 def extract_named_entities(text):
     doc = nlp(text)
-    return [(ent.text, ent.label_) for ent in doc.ents]
+    entities = [(ent.text, ent.label_) for ent in doc.ents]
+    return entities
 
 def display_entities(entities):
-    if not entities:
-        st.warning("Aucune entité trouvée.")
-        return
-    for text, label in entities:
-        st.markdown(f"**{label}**: {text}")
+    import streamlit as st
+    st.subheader("Entités extraites :")
+    for ent_text, ent_label in entities:
+        st.write(f"{ent_text} → {ent_label}")
