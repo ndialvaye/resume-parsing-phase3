@@ -1,20 +1,15 @@
-import spacy
 
-# Charger le modèle en_core_web_sm compatible avec spacy==3.5
-try:
-    nlp = spacy.load("en_core_web_sm")
-except:
-    import os
-    os.system("python -m spacy download en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+import spacy
+from PyPDF2 import PdfReader
+
+def extract_text_from_pdf(file):
+    pdf = PdfReader(file)
+    text = ""
+    for page in pdf.pages:
+        text += page.extract_text() or ""
+    return text
 
 def extract_named_entities(text):
+    nlp = spacy.load("en_core_web_sm")
     doc = nlp(text)
-    entities = [(ent.text, ent.label_) for ent in doc.ents]
-    return entities
-
-def display_entities(entities):
-    import streamlit as st
-    st.subheader("Entités extraites :")
-    for ent_text, ent_label in entities:
-        st.write(f"{ent_text} → {ent_label}")
+    return [(ent.text, ent.label_) for ent in doc.ents]

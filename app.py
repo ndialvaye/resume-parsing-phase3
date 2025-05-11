@@ -1,11 +1,17 @@
+
 import streamlit as st
-from utils import extract_named_entities, display_entities
+from utils import extract_text_from_pdf, extract_named_entities
+import pandas as pd
 
-st.title("Extraction d'entités nommées à partir de CVs")
+st.title("Extraction des Entités Nommées depuis un CV")
 
-uploaded_file = st.file_uploader("Téléversez un fichier PDF de CV", type=["pdf"])
+uploaded_file = st.file_uploader("Téléchargez un fichier PDF", type=["pdf"])
 
 if uploaded_file is not None:
-    text = uploaded_file.read().decode("latin-1")
+    text = extract_text_from_pdf(uploaded_file)
+    st.subheader("Texte extrait :")
+    st.write(text[:1000] + "...")
+    
     entities = extract_named_entities(text)
-    display_entities(entities)
+    st.subheader("Entités Nommées :")
+    st.dataframe(pd.DataFrame(entities, columns=["Entité", "Type"]))
