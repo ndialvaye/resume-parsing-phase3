@@ -1,12 +1,16 @@
-
 import streamlit as st
 from utils import extract_named_entities, display_entities
+import os
 
-st.title("Analyse des entités nommées dans les CVs")
+st.title("🔍 Resume Parsing - Phase 3: Named Entity Recognition")
 
-uploaded_file = st.file_uploader("Téléversez un CV au format PDF", type="pdf")
+uploaded_file = st.file_uploader("Upload a resume (PDF)", type=["pdf"])
 
 if uploaded_file:
-    with st.spinner("Traitement en cours..."):
-        entities = extract_named_entities(uploaded_file)
-        display_entities(entities)
+    with open("temp.pdf", "wb") as f:
+        f.write(uploaded_file.getbuffer())
+    st.success("File uploaded successfully!")
+
+    entities = extract_named_entities("temp.pdf")
+    st.subheader("📌 Extracted Entities")
+    display_entities(entities)
