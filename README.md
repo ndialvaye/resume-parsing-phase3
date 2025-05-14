@@ -1,17 +1,2 @@
-
-# Phase 3 - Resume Parsing NER
-
-Cette application Streamlit extrait automatiquement les entités nommées (NER) des CV en PDF.
-
-## Fonctionnalités
-
-- Upload de fichier PDF
-- Extraction automatique des entités (nom, organisation, lieu, etc.)
-- Visualisation dans l'interface
-
-## Lancement local
-
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
+# Résumé Parser - Phase 3
+Extraction d'entités nommées (NER) à partir de CV PDF en utilisant SpaCy et Streamlit.
